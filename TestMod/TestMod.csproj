@@ -1,0 +1,144 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+    <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+    <PropertyGroup>
+        <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+        <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+        <ProjectGuid>{1D42935B-452E-464C-B102-4AA79BC6B79A}</ProjectGuid>
+        <OutputType>Library</OutputType>
+        <AppDesignerFolder>Properties</AppDesignerFolder>
+        <RootNamespace>TestMod</RootNamespace>
+        <AssemblyName>TestMod</AssemblyName>
+        <TargetFrameworkVersion>v4.6.2</TargetFrameworkVersion>
+        <FileAlignment>512</FileAlignment>
+    </PropertyGroup>
+    <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+        <PlatformTarget>AnyCPU</PlatformTarget>
+        <DebugSymbols>true</DebugSymbols>
+        <DebugType>full</DebugType>
+        <Optimize>false</Optimize>
+        <OutputPath>bin\Debug\</OutputPath>
+        <DefineConstants>DEBUG;TRACE</DefineConstants>
+        <ErrorReport>prompt</ErrorReport>
+        <WarningLevel>4</WarningLevel>
+    </PropertyGroup>
+    <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+        <PlatformTarget>AnyCPU</PlatformTarget>
+        <DebugType>pdbonly</DebugType>
+        <Optimize>true</Optimize>
+        <OutputPath>bin\Release\</OutputPath>
+        <DefineConstants>TRACE</DefineConstants>
+        <ErrorReport>prompt</ErrorReport>
+        <WarningLevel>4</WarningLevel>
+    </PropertyGroup>
+    <ItemGroup>
+        <Reference Include="0Harmony">
+          <HintPath>Libs\0Harmony.dll</HintPath>
+        </Reference>
+        <Reference Include="Accessibility, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+          <HintPath>..\packages\ValheimGameLibs.0.217.38\lib\Accessibility.dll</HintPath>
+        </Reference>
+        <Reference Include="Assembly-CSharp, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+          <HintPath>..\packages\ValheimGameLibs.0.217.38\lib\Assembly-CSharp.dll</HintPath>
+        </Reference>
+        <Reference Include="assembly_googleanalytics, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+          <HintPath>..\packages\ValheimGameLibs.0.217.38\lib\assembly_googleanalytics.dll</HintPath>
+        </Reference>
+        <Reference Include="assembly_guiutils, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+          <HintPath>..\packages\ValheimGameLibs.0.217.38\lib\assembly_guiutils.dll</HintPath>
+        </Reference>
+        <Reference Include="assembly_lux, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+          <HintPath>..\packages\ValheimGameLibs.0.217.38\lib\assembly_lux.dll</HintPath>
+        </Reference>
+        <Reference Include="assembly_postprocessing, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+          <HintPath>..\packages\ValheimGameLibs.0.217.38\lib\assembly_postprocessing.dll</HintPath>
+        </Reference>
+        <Reference Include="assembly_simplemeshcombine, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+          <HintPath>..\packages\ValheimGameLibs.0.217.38\lib\assembly_simplemeshcombine.dll</HintPath>
+        </Reference>
+        <Reference Include="assembly_steamworks, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+          <HintPath>..\packages\ValheimGameLibs.0.217.38\lib\assembly_steamworks.dll</HintPath>
+        </Reference>
+        <Reference Include="assembly_sunshafts, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+          <HintPath>..\packages\ValheimGameLibs.0.217.38\lib\assembly_sunshafts.dll</HintPath>
+        </Reference>
+        <Reference Include="assembly_utils, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+          <HintPath>..\packages\ValheimGameLibs.0.217.38\lib\assembly_utils.dll</HintPath>
+        </Reference>
+        <Reference Include="assembly_valheim, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+          <HintPath>..\packages\ValheimGameLibs.0.217.38\lib\assembly_valheim.dll</HintPath>
+        </Reference>
+        <Reference Include="BepInEx">
+          <HintPath>Libs\BepInEx.dll</HintPath>
+        </Reference>
+        <Reference Include="com.rlabrecque.steamworks.net, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+          <HintPath>..\packages\ValheimGameLibs.0.217.38\lib\com.rlabrecque.steamworks.net.dll</HintPath>
+        </Reference>
+        <Reference Include="ConnectedStorage, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+          <HintPath>..\packages\ValheimGameLibs.0.217.38\lib\ConnectedStorage.dll</HintPath>
+        </Reference>
+        <Reference Include="Fishlabs.Common, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+          <HintPath>..\packages\ValheimGameLibs.0.217.38\lib\Fishlabs.Common.dll</HintPath>
+        </Reference>
+        <Reference Include="Fishlabs.Core, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+          <HintPath>..\packages\ValheimGameLibs.0.217.38\lib\Fishlabs.Core.dll</HintPath>
+        </Reference>
+        <Reference Include="Jotunn">
+          <HintPath>Libs\Jotunn.dll</HintPath>
+        </Reference>
+        <Reference Include="Mono.Posix, Version=4.0.0.0, Culture=neutral, PublicKeyToken=0738eb9f132ed756, processorArchitecture=MSIL">
+          <HintPath>..\packages\ValheimGameLibs.0.217.38\lib\Mono.Posix.dll</HintPath>
+        </Reference>
+        <Reference Include="Mono.WebBrowser, Version=4.0.0.0, Culture=neutral, PublicKeyToken=0738eb9f132ed756, processorArchitecture=MSIL">
+          <HintPath>..\packages\ValheimGameLibs.0.217.38\lib\Mono.WebBrowser.dll</HintPath>
+        </Reference>
+        <Reference Include="netstandard, Version=2.1.0.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+          <HintPath>..\packages\ValheimGameLibs.0.217.38\lib\netstandard.dll</HintPath>
+        </Reference>
+        <Reference Include="PlayFab, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+          <HintPath>..\packages\ValheimGameLibs.0.217.38\lib\PlayFab.dll</HintPath>
+        </Reference>
+        <Reference Include="PlayFabParty, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+          <HintPath>..\packages\ValheimGameLibs.0.217.38\lib\PlayFabParty.dll</HintPath>
+        </Reference>
+        <Reference Include="System" />
+        <Reference Include="System.Core" />
+        <Reference Include="System.Data" />
+        <Reference Include="System.Xml" />
+        <Reference Include="ui_lib, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+          <HintPath>..\packages\ValheimGameLibs.0.217.38\lib\ui_lib.dll</HintPath>
+        </Reference>
+        <Reference Include="UnityEngine">
+          <HintPath>Libs\UnityEngine.dll</HintPath>
+        </Reference>
+        <Reference Include="UnityEngine.CoreModule">
+          <HintPath>Libs\UnityEngine.CoreModule.dll</HintPath>
+        </Reference>
+        <Reference Include="XblPCSandbox, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+          <HintPath>..\packages\ValheimGameLibs.0.217.38\lib\XblPCSandbox.dll</HintPath>
+        </Reference>
+        <Reference Include="XGamingRuntime, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+          <HintPath>..\packages\ValheimGameLibs.0.217.38\lib\XGamingRuntime.dll</HintPath>
+        </Reference>
+    </ItemGroup>
+    <ItemGroup>
+        <Compile Include="TestMod.cs" />
+        <Compile Include="Properties\AssemblyInfo.cs" />
+    </ItemGroup>
+    <ItemGroup>
+      <None Include="packages.config" />
+    </ItemGroup>
+    <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+    <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+         Other similar extension points exist, see Microsoft.Common.targets.
+    <Target Name="BeforeBuild">
+    </Target>
+    <Target Name="AfterBuild">
+    </Target>
+    -->
+    
+    <Target Name="PostBuild" AfterTargets="PostBuildEvent">
+        <Exec Command="cp bin\Debug\TestMod.dll &quot;C:\Program Files (x86)\Steam\steamapps\common\Valheim\BepInEx\scripts\TestMod.dll&quot;" />
+    </Target>
+
+</Project>
