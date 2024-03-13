@@ -1,4 +1,9 @@
 bin/
 obj/
 .idea/
+
+AssetBundles/
+
+*.DotSettings
+*.bat
 *.user

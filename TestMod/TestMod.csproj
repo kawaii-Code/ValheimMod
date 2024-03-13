@@ -132,19 +132,22 @@
       <None Include="packages.config" />
     </ItemGroup>
     <ItemGroup>
-      <EmbeddedResource Include="cum" />
+      <Content Include="AssetBundles\*" />
+      <EmbeddedResource Include="AssetBundles\*" />
     </ItemGroup>
     <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-    <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
-         Other similar extension points exist, see Microsoft.Common.targets.
+    
     <Target Name="BeforeBuild">
+        <Exec Command="prebuild.bat" />
     </Target>
-    <Target Name="AfterBuild">
+    <Target Name="PostBuild" AfterTargets="PostBuildEvent">
+        <Exec Command="postbuild.bat" />
+    </Target>
+    
+    <!--
+    <Target Name="PostBuild" AfterTargets="PostBuildEvent">
+        <Exec Command="cp bin\Debug\TestMod.dll &quot;C:\Program Files (x86)\Steam\steamapps\common\Valheim\BepInEx\scripts\TestMod.dll&quot;" />
     </Target>
     -->
-    
-    <Target Name="PostBuild" AfterTargets="PostBuildEvent">
-        <Exec Command="c:\windows\system32\xcopy.exe /Y &quot;F:\games\steamapps\steamapps\common\Valheim\BepInEx\scripts\TestMod.dll&quot;" />
-    </Target>
 
 </Project>
