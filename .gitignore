@@ -3,6 +3,8 @@ obj/
 .idea/
 packages/
 
+packages/
+
 AssetBundles/
 
 *.DotSettings
