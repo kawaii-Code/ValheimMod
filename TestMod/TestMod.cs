@@ -4,10 +4,15 @@ using UnityEngine;
 using Jotunn;
 using Jotunn.Configs;
 using Jotunn.Entities;
+using Jotunn.Managers;
 using Jotunn.Utils;
 
 namespace TestMod
 {
+    public class MyMonobehavior : MonoBehaviour
+    {
+    }
+    
     [BepInPlugin(TestModGuid, "Test Mod", "1.0.0")]
     [BepInProcess("valheim.exe")]
     [BepInDependency(Main.ModGuid)]
@@ -19,23 +24,54 @@ namespace TestMod
 
         private void Awake()
         {
-            ItemConfig config = new ItemConfig();
-            config.Amount = 2;
-            config.Description = "This is a test item";
-            config.Name = "Test Item";
-            CustomItem item = new CustomItem("SpawnPoint.prefab", true, config);
-            item.FixReferences();
+            PrefabManager.OnVanillaPrefabsAvailable += AddCustomItems;
             _harmony.PatchAll();
         }
 
-        private static bool CursorShown;
-
-        private void Update()
+        private void AddCustomItems()
         {
-            if (UnityInput.Current.GetKeyDown(KeyCode.F3))
+            AssetBundle bundle = AssetUtils.LoadAssetBundleFromResources("myweapons");
+            AssetBundle swordBundle = AssetUtils.LoadAssetBundleFromResources("myswords");
+
+            GameObject capsuleAxe = bundle.LoadAsset<GameObject>("CapsuleAxe");
+            GameObject cubeSword = swordBundle.LoadAsset<GameObject>("CubeSword");
+
+            ItemConfig cubeSwordConfig = new ItemConfig()
             {
-                CursorShown = !CursorShown;
-            }
+                Name = "Кубо-меч",
+                Description = "Его сложно положить в ножны...",
+            };
+
+            ItemConfig capsuleAxeConfig = new ItemConfig
+            {
+                Name = "Тестовый топорик",
+                Description = "Рубит деревья как пиццу",
+                CraftingStation = CraftingStations.Workbench,
+            };
+            capsuleAxeConfig.AddRequirement(new RequirementConfig("Wood", 20));
+
+            // Mono Behavior
+            //capsuleAxe.AddComponent<MyMonobehavior>();
+
+            ItemConfig evilSwordConfig = new ItemConfig
+            {
+                Name = "$item_evilsword",
+                Description = "$item_evilsword_desc",
+                CraftingStation = CraftingStations.Workbench,
+            };
+            evilSwordConfig.AddRequirement(new RequirementConfig("Stone", 1));
+            evilSwordConfig.AddRequirement(new RequirementConfig("Wood", 1));
+            
+            CustomItem capsuleAxeCustomItem = new CustomItem(capsuleAxe, true, capsuleAxeConfig);
+            CustomItem evilSword = new CustomItem("EvilSword", "SwordBlackmetal", evilSwordConfig);
+            CustomItem cubeSwordCustomItem = new CustomItem(cubeSword, true, cubeSwordConfig);
+            
+            ItemManager.Instance.AddItem(evilSword);
+            ItemManager.Instance.AddItem(capsuleAxeCustomItem);
+            ItemManager.Instance.AddItem(cubeSwordCustomItem);
+
+            // You want that to run only once, Jotunn has the item cached for the game session
+            PrefabManager.OnVanillaPrefabsAvailable -= AddCustomItems;
         }
 
         private void OnDestroy()
@@ -43,34 +79,23 @@ namespace TestMod
             _harmony.UnpatchSelf();
         }
 
-        [HarmonyPatch(typeof(Character), nameof(Character.Jump))]
-        public class JumpPatch
+        private void Update()
         {
-            public static void Prefix(ref Character __instance, ref float ___m_jumpForce)
+            if (UnityInput.Current.GetKeyDown(KeyCode.F3))
             {
-                Debug.Log("Hello!");
-                ___m_jumpForce = 10;
-                __instance.SetHealth(100);
+                AddCustomItems();
             }
         }
 
-        [HarmonyPatch(typeof(GameCamera), nameof(GameCamera.UpdateMouseCapture))]
-        public class MainCameraPatch
+        [HarmonyPatch(typeof(Tutorial), nameof(Tutorial.Update))]
+        [HarmonyPatch(typeof(Tutorial), nameof(Tutorial.ShowText))]
+        public class RemoveTutorialRaven
         {
-            public static void Postfix()
+            public static bool Prefix()
             {
-                /*
-                if (CursorShown)
-                {
-                    Cursor.lockState = CursorLockMode.None;
-                    Cursor.visible = true;
-                }
-                else
-                {
-                    Cursor.lockState = CursorLockMode.Locked;
-                    Cursor.visible = false;
-                }
-                */
+                Jotunn.Logger.LogDebug("Deleting Raven with Jotunn!");
+                Debug.Log("Deleting Raven");
+                return false;
             }
         }
     }

@@ -111,6 +111,9 @@
         <Reference Include="UnityEngine">
           <HintPath>Libs\UnityEngine.dll</HintPath>
         </Reference>
+        <Reference Include="UnityEngine.AssetBundleModule">
+          <HintPath>Libs\UnityEngine.AssetBundleModule.dll</HintPath>
+        </Reference>
         <Reference Include="UnityEngine.CoreModule">
           <HintPath>Libs\UnityEngine.CoreModule.dll</HintPath>
         </Reference>
@@ -128,17 +131,23 @@
     <ItemGroup>
       <None Include="packages.config" />
     </ItemGroup>
+    <ItemGroup>
+      <Content Include="AssetBundles\*" />
+      <EmbeddedResource Include="AssetBundles\*" />
+    </ItemGroup>
     <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-    <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
-         Other similar extension points exist, see Microsoft.Common.targets.
-    <Target Name="BeforeBuild">
-    </Target>
-    <Target Name="AfterBuild">
-    </Target>
-    -->
     
+    <Target Name="BeforeBuild">
+        <Exec Command="prebuild.bat" />
+    </Target>
+    <Target Name="PostBuild" AfterTargets="PostBuildEvent">
+        <Exec Command="postbuild.bat" />
+    </Target>
+    
+    <!--
     <Target Name="PostBuild" AfterTargets="PostBuildEvent">
         <Exec Command="cp bin\Debug\TestMod.dll &quot;C:\Program Files (x86)\Steam\steamapps\common\Valheim\BepInEx\scripts\TestMod.dll&quot;" />
     </Target>
+    -->
 
 </Project>
