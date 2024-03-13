@@ -114,8 +114,14 @@
         <Reference Include="UnityEngine.AssetBundleModule">
           <HintPath>Libs\UnityEngine.AssetBundleModule.dll</HintPath>
         </Reference>
+        <Reference Include="UnityEngine.AudioModule">
+          <HintPath>Libs\UnityEngine.AudioModule.dll</HintPath>
+        </Reference>
         <Reference Include="UnityEngine.CoreModule">
           <HintPath>Libs\UnityEngine.CoreModule.dll</HintPath>
+        </Reference>
+        <Reference Include="UnityEngine.PhysicsModule">
+          <HintPath>Libs\UnityEngine.PhysicsModule.dll</HintPath>
         </Reference>
         <Reference Include="XblPCSandbox, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
           <HintPath>..\packages\ValheimGameLibs.0.217.38\lib\XblPCSandbox.dll</HintPath>
