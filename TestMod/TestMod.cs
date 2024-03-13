@@ -1,14 +1,11 @@
-﻿using System;
-using System.Collections.Specialized;
-using System.Reflection;
 using BepInEx;
 using HarmonyLib;
-using UnityEngine;
 using Jotunn;
 using Jotunn.Configs;
 using Jotunn.Entities;
 using Jotunn.Managers;
 using Jotunn.Utils;
+
 namespace TestMod
 {
     using System.Collections;
@@ -96,22 +93,27 @@ namespace TestMod
         private const string TestModGuid = "test.mod";
         private readonly Harmony _harmony = new Harmony(TestModGuid);
 
+        public static Piece Toilet;
+
         private void Awake()
         {
-            ItemConfig config = new ItemConfig();
-            config.Amount = 2;
+            PrefabManager.OnVanillaPrefabsAvailable += AddCustomItems;
+
             AddPizzaBundle();
             AddGuitarBundle();
+
+            ItemConfig config = new ItemConfig();
+            config.Amount = 2;
             config.Description = "This is a test item";
             config.Name = "Test Item";
+
             CustomItem item = new CustomItem("SpawnPoint.prefab", true, config);
             item.FixReferences();
             _harmony.PatchAll();
         }
 
         private void AddGuitarBundle()
-        {   
-            
+        {
             AssetBundle bundle = AssetUtils.LoadAssetBundleFromResources("guitar");
             Debug.LogError(bundle == null);
             GameObject guitar = bundle.LoadAsset<GameObject>("guitar");
@@ -122,13 +124,22 @@ namespace TestMod
                 Description = "Врагов бей, но струны не ломай",
                 CraftingStation = CraftingStations.Workbench,
             };
-            
+
             CustomItem guitarCustomItem = new CustomItem(guitar, true, guitarConfig);
-            
             ItemManager.Instance.AddItem(guitarCustomItem);
             PrefabManager.Instance.AddPrefab(guitar);
         }
-        
+
+        private void AddCustomItems()
+        {
+            AssetBundle furnitureBundle = AssetUtils.LoadAssetBundleFromResources("myfurniture");
+            GameObject toilet = furnitureBundle.LoadAsset<GameObject>("Toilet");
+            Toilet = toilet.GetComponent<Piece>();
+
+            PrefabManager.Instance.AddPrefab(toilet);
+            PrefabManager.OnVanillaPrefabsAvailable -= AddCustomItems;
+        }
+
         private void AddPizzaBundle()
         {
             AssetBundle bundle = AssetUtils.LoadAssetBundleFromResources("cum");
@@ -136,33 +147,14 @@ namespace TestMod
             GameObject pizza = bundle.LoadAsset<GameObject>("Pizza");
             PrefabManager.Instance.AddPrefab(pizza);
         }
-        
-        private static bool CursorShown;
 
-        private void Update()
-        {
-            if (UnityInput.Current.GetKeyDown(KeyCode.F3))
-            {
-                
-                CursorShown = !CursorShown;
-            }
-        }
-        
+        private static bool DevcommandsEnabled = false;
 
         private void OnDestroy()
         {
             _harmony.UnpatchSelf();
         }
 
-        [HarmonyPatch(typeof(Character), nameof(Character.Awake))]
-        public class ChubPatch
-        {
-            public static void Postfix()
-            {
-               
-            }
-        }
-        
         [HarmonyPatch(typeof(Character), nameof(Character.CheckRun))]
         public class StaminaPatch
         {
@@ -171,18 +163,30 @@ namespace TestMod
             }
         }
         
-        [HarmonyPatch(typeof(Character), nameof(Character.Jump))]
-        public class JumpPatch
+        [HarmonyPatch(typeof(PieceTable), nameof(PieceTable.UpdateAvailable))]
+        public class AddToilet
         {
-            public static void Prefix(ref Character __instance)
+            public static void Postfix(ref List<List<Piece>> ___m_availablePieces)
             {
-                __instance.m_boss = true;
-                Debug.Log(__instance.m_boss);
-                //__instance.SetHealth(100);
+                ___m_availablePieces[(int)Toilet.m_category].Add(Toilet);
+                Debug.Log("Adding toilet...");
             }
         }
 
-        
+        [HarmonyPatch(typeof(Player), nameof(Player.Update))]
+        public class PlayerPatch
+        {
+            public static void Prefix()
+            {
+                if (!DevcommandsEnabled)
+                {
+                    Debug.Log("Enabling devcommands...");
+                    Console.instance.TryRunCommand("devcommands");
+                    DevcommandsEnabled = true;
+                }
+            }
+        }
+
         [HarmonyPatch(typeof(ItemDrop), nameof(ItemDrop.Pickup))]
         public class CumPatch
         {
@@ -192,24 +196,6 @@ namespace TestMod
                     return;
                 
                 Debug.LogError("булыжник дропается примерно тут");
-            }
-        }
-        
-        [HarmonyPatch(typeof(GameCamera), nameof(GameCamera.UpdateMouseCapture))]
-        public class MainCameraPatch
-        {
-            public static void Postfix()
-            {
-                if (CursorShown)
-                {
-                    Cursor.lockState = CursorLockMode.None;
-                    Cursor.visible = true;
-                }
-                else
-                {
-                    Cursor.lockState = CursorLockMode.Locked;
-                    Cursor.visible = false;
-                }
             }
         }
     }

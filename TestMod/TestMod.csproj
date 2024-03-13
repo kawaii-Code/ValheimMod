@@ -138,7 +138,6 @@
       <None Include="packages.config" />
     </ItemGroup>
     <ItemGroup>
-      <Content Include="AssetBundles\*" />
       <EmbeddedResource Include="AssetBundles\*" />
     </ItemGroup>
     <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
