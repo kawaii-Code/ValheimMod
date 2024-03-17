@@ -83,7 +83,6 @@ namespace TestMod
         }
     }
 
-    
     [BepInPlugin(TestModGuid, "Test Mod", "1.0.0")]
     [BepInProcess("valheim.exe")]
     [BepInDependency(Main.ModGuid)]
