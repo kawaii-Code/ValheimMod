@@ -1,3 +1,6 @@
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
 using BepInEx;
 using HarmonyLib;
 using Jotunn;
@@ -8,10 +11,6 @@ using Jotunn.Utils;
 
 namespace TestMod
 {
-    using System.Collections;
-    using System.Collections.Generic;
-    using UnityEngine;
-
     public class CobbleDropZone : MonoBehaviour
     {
         private float _dropDelay = 0.5f;
@@ -97,6 +96,8 @@ namespace TestMod
         private void Awake()
         {
             PrefabManager.OnVanillaPrefabsAvailable += AddCustomItems;
+            CreatureManager.OnVanillaCreaturesAvailable += AddCustomCreatures;
+            AddCustomCreatures();
 
             AddPizzaBundle();
             AddGuitarBundle();
@@ -109,6 +110,27 @@ namespace TestMod
             CustomItem item = new CustomItem("SpawnPoint.prefab", true, config);
             item.FixReferences();
             _harmony.PatchAll();
+        }
+
+        private void AddCustomCreatures()
+        {
+            AssetBundle sanekBundle = AssetUtils.LoadAssetBundleFromResources("mycreatures");
+            GameObject sanekPrefab = sanekBundle.LoadAsset<GameObject>("Sanek");
+            CreatureConfig sanekConfig = new CreatureConfig();
+            sanekConfig.Name = "Санёк";
+            sanekConfig.Faction = Character.Faction.PlainsMonsters;
+            sanekConfig.AddSpawnConfig(new SpawnConfig()
+            {
+                Name = "SanekSpawn",
+                SpawnChance = 100f,
+                SpawnInterval = 1f,
+                SpawnDistance = 1f,
+                Biome = Heightmap.Biome.Meadows,
+                MaxSpawned = 5,
+            });
+            CustomCreature sanek = new CustomCreature(sanekPrefab, false, sanekConfig);
+            
+            CreatureManager.Instance.AddCreature(sanek);
         }
 
         private void AddGuitarBundle()
@@ -195,6 +217,19 @@ namespace TestMod
                     return;
                 
                 Debug.LogError("булыжник дропается примерно тут");
+            }
+        }
+
+        [HarmonyPatch(typeof(Tutorial), nameof(Tutorial.Update))]
+        [HarmonyPatch(typeof(Tutorial), nameof(Tutorial.ShowText))]
+        public class RemoveTutorialRaven
+        {
+            public static bool Prefix()
+            
+            {
+                Jotunn.Logger.LogDebug("Deleting Raven with Jotunn!");
+                Debug.Log("Deleting Raven");
+                return false;
             }
         }
     }
