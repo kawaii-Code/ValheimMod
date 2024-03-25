@@ -1,4 +1,6 @@
 using System.Threading.Tasks;
+using System.Collections.Generic;
+using UnityEngine;
 using BepInEx;
 using HarmonyLib;
 using Jotunn;
@@ -9,11 +11,6 @@ using Jotunn.Utils;
 
 namespace TestMod
 {
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
-
-    
     [BepInPlugin(TestModGuid, "Test Mod", "1.0.0")]
     [BepInProcess("valheim.exe")]
     [BepInDependency(Main.ModGuid)]
@@ -34,7 +31,7 @@ using UnityEngine;
         
         private void Awake()
         {
-            PrefabManager.OnVanillaPrefabsAvailable += AddCustomItems;
+            PrefabManager.OnVanillaPrefabsAvailable += LoadMod;
 
             AddPizzaBundle();
             AddGuitarBundle();
@@ -47,6 +44,37 @@ using UnityEngine;
             CustomItem item = new CustomItem("SpawnPoint.prefab", true, config);
             item.FixReferences();
             _harmony.PatchAll();
+        }
+
+        private void AddCustomCreatures(GameObject spine)
+        {
+            AssetBundle sanekBundle = AssetUtils.LoadAssetBundleFromResources("mycreatures");
+            GameObject sanekPrefab = sanekBundle.LoadAsset<GameObject>("Sanek");
+            CreatureConfig sanekConfig = new CreatureConfig();
+
+            sanekConfig.Name = "Санёк";
+            sanekConfig.Faction = Character.Faction.PlainsMonsters;
+            sanekConfig.AddSpawnConfig(new SpawnConfig()
+            {
+                Name = "SanekSpawn",
+                SpawnChance = 100f,
+                SpawnInterval = 1f,
+                SpawnDistance = 1f,
+                Biome = Heightmap.Biome.Meadows,
+                MaxSpawned = 5,
+            });
+            sanekConfig.AddDropConfig(new DropConfig()
+            {
+                Chance = 100f,
+                Item = "Spine",
+                LevelMultiplier = false,
+                MinAmount = 1,
+                MaxAmount = 2,
+                OnePerPlayer = false,
+            });
+            CustomCreature sanek = new CustomCreature(sanekPrefab, false, sanekConfig);
+            
+            CreatureManager.Instance.AddCreature(sanek);
         }
 
         private void AddGuitarBundle()
@@ -78,14 +106,20 @@ using UnityEngine;
             PrefabManager.Instance.AddPrefab(guitar);
         }
 
-        private void AddCustomItems()
+        private void LoadMod()
         {
+            PrefabManager.OnVanillaPrefabsAvailable -= LoadMod;
+            
             AssetBundle furnitureBundle = AssetUtils.LoadAssetBundleFromResources("myfurniture");
             GameObject toilet = furnitureBundle.LoadAsset<GameObject>("Toilet");
             Toilet = toilet.GetComponent<Piece>();
-
             PrefabManager.Instance.AddPrefab(toilet);
-            PrefabManager.OnVanillaPrefabsAvailable -= AddCustomItems;
+
+            AssetBundle itemsBundle = AssetUtils.LoadAssetBundleFromResources("myitems");
+            GameObject spine = itemsBundle.LoadAsset<GameObject>("Spine");
+            PrefabManager.Instance.AddPrefab(spine);
+            
+            AddCustomCreatures(spine);
         }
 
         private void AddPizzaBundle()
@@ -129,8 +163,6 @@ using UnityEngine;
         {
             while (_localPlayer == null)
             {
-                Debug.LogError("cum");
-                
                 _localPlayer = Player.m_localPlayer;
                 await Task.Delay(100);
             }

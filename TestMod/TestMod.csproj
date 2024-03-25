@@ -141,6 +141,8 @@
     </ItemGroup>
     <ItemGroup>
         <Compile Include="CustomAnimationsProvider.cs" />
+        <Compile Include="Cobble.cs" />
+        <Compile Include="CobbleDropZone.cs" />
         <Compile Include="TestMod.cs" />
         <Compile Include="Properties\AssemblyInfo.cs" />
     </ItemGroup>
