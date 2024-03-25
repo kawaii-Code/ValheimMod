@@ -1,3 +1,4 @@
+using System.Threading.Tasks;
 using BepInEx;
 using HarmonyLib;
 using Jotunn;
@@ -8,80 +9,9 @@ using Jotunn.Utils;
 
 namespace TestMod
 {
-    using System.Collections;
-    using System.Collections.Generic;
-    using UnityEngine;
-
-    public class CobbleDropZone : MonoBehaviour
-    {
-        private float _dropDelay = 0.5f;
-        private Cobble _cobble;
-
-        private void Start()
-        {
-            _cobble = FindObjectOfType<Cobble>();
-            Debug.LogError($"cobble - {_cobble == null}");
-        }
-    
-        private void OnTriggerEnter(Collider other)
-        {
-            if (other.gameObject.TryGetComponent(out Player player) == false || other.gameObject.TryGetComponent(out Humanoid player2) == false)
-                return;
-
-            _cobble.transform.position = new Vector3(transform.position.x, transform.position.y + 10, transform.position.z);
-        
-            StartCoroutine(DelayedDrop());
-        }
-
-        private IEnumerator DelayedDrop()
-        {
-            yield return new WaitForSecondsRealtime(_dropDelay);
-
-            _cobble.Drop();
-        }
-    }
-    
-    public class Cobble : MonoBehaviour
-    {
-        private bool _dropOnAwake;
-        private Rigidbody _rigidbody;
- 
-        public void Init(bool dropOnAwake)
-        {
-            _dropOnAwake = dropOnAwake;
-        }
-    
-        private void OnCollisionEnter(Collision other)
-        {
-            Debug.LogError(other.gameObject.name);
-        
-            if(other.gameObject.TryGetComponent(out Humanoid player) == false)
-                return;
-
-            Debug.LogError("Player entered");
-        
-            HitData hitData = new HitData();
-            hitData.m_damage.m_damage = 99999f;
-            hitData.m_hitType = HitData.HitType.EdgeOfWorld;
-            player.Damage(hitData);
-            
-            GetComponent<AudioSource>().Play();
-        }
-    
-        private void Awake()
-        {
-            if(_dropOnAwake)
-                _rigidbody.isKinematic = false;
-        
-            _rigidbody = GetComponent<Rigidbody>();
-        }
-
-        [ContextMenu("Drop")]
-        public void Drop()
-        {
-            _rigidbody.isKinematic = false;
-        }
-    }
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
 
     
     [BepInPlugin(TestModGuid, "Test Mod", "1.0.0")]
@@ -95,6 +25,13 @@ namespace TestMod
 
         public static Piece Toilet;
 
+        private static RuntimeAnimatorController _controller;
+        private static GameObject _guitarPrefab;
+
+        private static List<AudioClip> _clips;
+        
+        private static Player _localPlayer;
+        
         private void Awake()
         {
             PrefabManager.OnVanillaPrefabsAvailable += AddCustomItems;
@@ -117,7 +54,18 @@ namespace TestMod
             AssetBundle bundle = AssetUtils.LoadAssetBundleFromResources("guitar");
             Debug.LogError(bundle == null);
             GameObject guitar = bundle.LoadAsset<GameObject>("guitar");
+            _controller = bundle.LoadAsset<RuntimeAnimatorController>("CustomAnimationController");
+            _guitarPrefab = bundle.LoadAsset<GameObject>("guitar2");
+            Debug.LogError($"guitar - {_guitarPrefab == null}");
+            Debug.LogError("Controller - " + (_controller == null));
 
+            var clips = new List<AudioClip>();
+            
+            for (int i = 1; i < 5; i++) 
+                clips.Add(bundle.LoadAsset<AudioClip>($"clip{i}"));
+
+            _clips = clips;
+            
             ItemConfig guitarConfig = new ItemConfig
             {
                 Name = "Гитара",
@@ -162,6 +110,37 @@ namespace TestMod
             {
             }
         }
+
+        [HarmonyPatch(typeof(Player), nameof(Game.Start))]
+        public class AnimatorSetPatch
+        {
+            public static void Postfix(ref Player __instance)
+            {
+
+                Cum();
+
+                /*var provider = _localPlayer.gameObject.AddComponent<CustomAnimationsProvider>();
+                Debug.LogError(_localPlayer.gameObject.name);
+                provider.Init(_controller, _guitarPrefab, _localPlayer.gameObject.transform, _clips);*/
+            }
+        }
+
+        private static async void Cum()
+        {
+            while (_localPlayer == null)
+            {
+                Debug.LogError("cum");
+                
+                _localPlayer = Player.m_localPlayer;
+                await Task.Delay(100);
+            }
+            
+            Debug.LogError("Hell yeah");
+            
+            var provider = _localPlayer.gameObject.AddComponent<CustomAnimationsProvider>();
+            Debug.LogError(_localPlayer.gameObject.name);
+            provider.Init(_controller, _guitarPrefab, _localPlayer.gameObject.transform, _clips);
+        } 
         
         [HarmonyPatch(typeof(PieceTable), nameof(PieceTable.UpdateAvailable))]
         public class AddToilet
